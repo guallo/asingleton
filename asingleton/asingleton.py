@@ -2,6 +2,19 @@ from functools import wraps
 
 
 def singleton(*args, **kwargs):
+    """
+    >>> @singleton
+    ... class Service:
+    ...     pass
+    ...
+    >>> Service() is Service.instance
+    True
+    >>> Service()  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    AssertionError: There is already an instance of type <class '...Service'>;
+    it can be accessed through the class attribute 'Service.instance'.
+    """
     default_attr_name = 'instance'
     default_enable_name_mangling = True
     default_just_this_class = True
