@@ -6,7 +6,7 @@ def singleton(*args, **kwargs):
     >>> @singleton
     ... class Service:
     ...     pass
-    ...
+    ... 
     >>> Service() is Service.instance
     True
     >>> Service()  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
@@ -14,18 +14,49 @@ def singleton(*args, **kwargs):
         ...
     AssertionError: There is already an instance of type <class '...Service'>;
     it can be accessed through the class attribute 'Service.instance'.
+    
+    
+    >>> @singleton('__instance')
+    ... class Service:
+    ...     @classmethod
+    ...     def get_instance(cls):
+    ...         return cls.__instance
+    ... 
+    >>> s = Service()
+    >>> Service.__instance
+    Traceback (most recent call last):
+        ...
+    AttributeError: type object 'Service' has no attribute '__instance'
+    >>> Service.get_instance() is s
+    True
+    
+    
+    >>> @singleton(not_just_this_class=True)
+    ... class Service:
+    ...     pass
+    ... 
+    >>> class Apache(Service):
+    ...     pass
+    ... 
+    >>> Apache() is Apache.instance
+    True
+    >>> Apache()  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    Traceback (most recent call last):
+        ...
+    AssertionError: There is already an instance of type <class '...Apache'>;
+    it can be accessed through the class attribute 'Apache.instance'.
     """
     default_attr_name = 'instance'
-    default_enable_name_mangling = True
-    default_just_this_class = True
+    default_disable_name_mangling = False
+    default_not_just_this_class = False
     
     def decorator(cls):
         original_cls = cls
         original_new = cls.__new__
         
         def __new__(cls, *args, **kwargs):
-            if not just_this_class or cls is original_cls:
-                if enable_name_mangling and attr_name.startswith('__') \
+            if not_just_this_class or cls is original_cls:
+                if not disable_name_mangling and attr_name.startswith('__') \
                         and not attr_name.endswith('__'):
                     effective_attr_name = f'_{cls.__name__}{attr_name}'
                 else:
@@ -54,22 +85,22 @@ def singleton(*args, **kwargs):
     
     if args and isinstance(args[0], type) or 'cls' in kwargs:
         def singleton(cls, attr_name=default_attr_name, 
-                    enable_name_mangling=default_enable_name_mangling,
-                    just_this_class=default_just_this_class):
-            return (cls, attr_name, enable_name_mangling, just_this_class)
+                    disable_name_mangling=default_disable_name_mangling,
+                    not_just_this_class=default_not_just_this_class):
+            return (cls, attr_name, disable_name_mangling, not_just_this_class)
         
         (cls, 
         attr_name, 
-        enable_name_mangling, 
-        just_this_class) = singleton(*args, **kwargs)
+        disable_name_mangling, 
+        not_just_this_class) = singleton(*args, **kwargs)
         return decorator(cls)
     else:
         def singleton(attr_name=default_attr_name, 
-                    enable_name_mangling=default_enable_name_mangling,
-                    just_this_class=default_just_this_class):
-            return (attr_name, enable_name_mangling, just_this_class)
+                    disable_name_mangling=default_disable_name_mangling,
+                    not_just_this_class=default_not_just_this_class):
+            return (attr_name, disable_name_mangling, not_just_this_class)
         
         (attr_name, 
-        enable_name_mangling, 
-        just_this_class) = singleton(*args, **kwargs)
+        disable_name_mangling, 
+        not_just_this_class) = singleton(*args, **kwargs)
         return decorator
