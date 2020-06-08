@@ -10,5 +10,5 @@ cmdline = [sys.executable, '-m', 'unittest', 'discover',
 
 sys.exit(subprocess.run(cmdline, 
                         stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr, 
-                        cwd=os.path.dirname(__file__)
+                        cwd=os.path.dirname(os.path.abspath(__file__))
                         ).returncode)
