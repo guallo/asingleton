@@ -1,7 +1,7 @@
 # asingleton
 
 ![Run tests](https://github.com/guallo/asingleton/workflows/Run%20tests/badge.svg)
-![Upload to PyPI](https://github.com/guallo/asingleton/workflows/Upload%20to%20PyPI/badge.svg)
+![Upload release assets](https://github.com/guallo/asingleton/workflows/Upload%20release%20assets/badge.svg)
 
 ```python3
 >>> from asingleton import singleton
